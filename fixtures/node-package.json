@@ -1,0 +1,16 @@
+{
+  "name": "sample-node",
+  "files": [
+    "package.json",
+    "README.md",
+    "src/index.js",
+    "test/index.test.js",
+    ".github/workflows/ci.yml"
+  ],
+  "package": {
+    "scripts": {
+      "test": "node --test",
+      "build": "node scripts/build.js"
+    }
+  }
+}

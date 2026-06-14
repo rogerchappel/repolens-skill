@@ -1,0 +1,9 @@
+{
+  "name": "sparse",
+  "files": [
+    "index.js"
+  ],
+  "package": {
+    "scripts": {}
+  }
+}
