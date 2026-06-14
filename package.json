@@ -1,0 +1,23 @@
+{
+  "name": "repolens-skill",
+  "version": "0.1.0",
+  "description": "Repository review briefing skill for local project snapshots.",
+  "type": "module",
+  "bin": {
+    "repolens-skill": "bin/repolens-skill.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "build": "node scripts/build.js",
+    "smoke": "node bin/repolens-skill.js fixtures/node-package.json --format markdown"
+  },
+  "keywords": [
+    "agent-skill",
+    "dry-run",
+    "cli",
+    "local-first"
+  ],
+  "author": "Roger Chappel",
+  "license": "MIT"
+}
