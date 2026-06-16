@@ -10,6 +10,7 @@ Repolens Skill is a local-first agent skill package that scans a local project s
 npm install
 npm test
 npm run smoke
+npm run release:check
 node bin/repolens-skill.js fixtures/node-package.json --format markdown
 ```
 
@@ -21,6 +22,18 @@ node bin/repolens-skill.js fixtures/node-package.json --format json
 ```
 
 The CLI reads repository snapshot JSON and prints a repository review brief. It never calls external services, writes to third-party systems, or reads credentials.
+
+## Release Verification
+
+```bash
+npm run package:smoke
+npm run release:check
+```
+
+`package:smoke` runs `npm pack --dry-run` and confirms the package includes the
+CLI, source modules, fixtures, release docs, skill file, README, and license.
+`release:check` combines static checks, tests, build, fixture smoke, and package
+smoke so maintainers can use the same gate locally and in CI.
 
 ## Library
 
