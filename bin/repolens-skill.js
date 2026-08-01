@@ -25,5 +25,9 @@ if (!['markdown', 'json'].includes(format)) {
 let input;
 try { input = JSON.parse(fs.readFileSync(file, 'utf8')); }
 catch (error) { console.error('Failed to read JSON input: ' + error.message); process.exit(1); }
+if (!input || typeof input !== 'object' || Array.isArray(input)) {
+  console.error('Invalid snapshot: expected a top-level JSON object.');
+  process.exit(1);
+}
 const result = analyzeRepoSnapshot(input);
 console.log(format === 'json' ? JSON.stringify(result, null, 2) : renderMarkdown(result));
