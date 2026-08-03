@@ -6,8 +6,23 @@ Use this skill when an agent needs to scans a local project snapshot and produce
 
 ## Required Inputs
 
-- A JSON file matching one of the documented fixture shapes.
+- A snapshot JSON object with a required `files` array of string paths.
+- An optional `package` object (or `null`). Its optional `scripts` field must be
+  an object whose values are command strings.
 - A requested output format: `markdown` or `json`.
+
+For example:
+
+```json
+{
+  "name": "sample-node",
+  "files": ["README.md", "test/index.test.js"],
+  "package": { "scripts": { "test": "node --test" } }
+}
+```
+
+Malformed top-level or nested fields are rejected without generating a review
+brief. See `fixtures/` for complete valid snapshots.
 
 ## Side-Effect Boundaries
 

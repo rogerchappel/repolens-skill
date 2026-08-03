@@ -23,6 +23,28 @@ node bin/repolens-skill.js fixtures/node-package.json --format json
 
 The CLI reads repository snapshot JSON and prints a repository review brief. It never calls external services, writes to third-party systems, or reads credentials.
 
+### Snapshot JSON shape
+
+Each snapshot must be a top-level JSON object with this shape:
+
+```json
+{
+  "name": "optional-repository-name",
+  "files": ["README.md", "src/index.js", "test/index.test.js"],
+  "package": {
+    "scripts": {
+      "test": "node --test",
+      "build": "node scripts/build.js"
+    }
+  }
+}
+```
+
+`files` is required and every entry must be a string. `package` is optional and
+may be an object or `null`; when present, `package.scripts` is optional but must
+be an object whose command values are strings. Invalid snapshots are rejected
+with a concise error and do not produce a review brief.
+
 ## Release Verification
 
 ```bash
@@ -38,6 +60,8 @@ smoke so maintainers can use the same gate locally and in CI.
 ## Library
 
 Import from `src/index.js` for tests or agent wrappers. The public functions are intentionally small so other agents can inspect and adapt the behavior.
+`analyzeRepoSnapshot` enforces the same snapshot shape as the CLI and throws a
+`TypeError` when the input is invalid.
 
 ## Safety Notes
 
