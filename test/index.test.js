@@ -76,3 +76,56 @@ test('cli rejects invalid snapshot shapes without a stack trace', () => {
     }
   }
 });
+
+test('library rejects malformed nested snapshot fields', () => {
+  const invalidSnapshots = [
+    [{}, 'Invalid snapshot: "files" must be an array of strings.'],
+    [{ files: 'README.md' }, 'Invalid snapshot: "files" must be an array of strings.'],
+    [{ files: [42] }, 'Invalid snapshot: "files" must be an array of strings.'],
+    [{ files: [], package: 'package.json' }, 'Invalid snapshot: "package" must be an object or null.'],
+    [{ files: [], package: [] }, 'Invalid snapshot: "package" must be an object or null.'],
+    [{ files: [], package: { scripts: null } }, 'Invalid snapshot: "package.scripts" must be an object.'],
+    [{ files: [], package: { scripts: [] } }, 'Invalid snapshot: "package.scripts" must be an object.'],
+    [{ files: [], package: { scripts: { test: { command: 'node --test' } } } },
+      'Invalid snapshot: script "test" must be a string.'],
+    [{ files: [], package: { scripts: { build: 42 } } },
+      'Invalid snapshot: script "build" must be a string.'],
+  ];
+
+  for (const [snapshot, message] of invalidSnapshots) {
+    assert.throws(() => analyzeRepoSnapshot(snapshot), { name: 'TypeError', message });
+  }
+});
+
+test('library accepts documented snapshot variants', () => {
+  for (const fixture of ['node-package.json', 'docs-only.json', 'sparse-repo.json']) {
+    assert.doesNotThrow(() => analyzeRepoSnapshot(load(fixture)));
+  }
+});
+
+test('cli reports malformed nested fields without output or a stack trace', () => {
+  const invalidSnapshots = [
+    [{ files: {} }, 'Invalid snapshot: "files" must be an array of strings.'],
+    [{ files: [], package: [] }, 'Invalid snapshot: "package" must be an object or null.'],
+    [{ files: [], package: { scripts: [] } }, 'Invalid snapshot: "package.scripts" must be an object.'],
+    [{ files: [], package: { scripts: { test: { command: 'node --test' } } } },
+      'Invalid snapshot: script "test" must be a string.'],
+  ];
+
+  for (const [snapshot, message] of invalidSnapshots) {
+    const fixture = path.join(process.cwd(), `invalid-${Math.random()}.json`);
+    fs.writeFileSync(fixture, JSON.stringify(snapshot));
+    try {
+      const result = spawnSync(process.execPath, ['bin/repolens-skill.js', fixture, '--format', 'json'], {
+        encoding: 'utf8',
+      });
+      assert.equal(result.status, 1);
+      assert.equal(result.stdout, '');
+      assert.equal(result.stderr, message + '\n');
+      assert.doesNotMatch(result.stderr, /\n\s+at /);
+      assert.doesNotMatch(result.stderr, /releaseReadiness|npm run/);
+    } finally {
+      fs.rmSync(fixture);
+    }
+  }
+});
