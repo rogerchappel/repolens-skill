@@ -4,6 +4,7 @@ const required = [
   'SKILL.md',
   'SECURITY.md',
   'CHANGELOG.md',
+  'package-lock.json',
   'docs/PRD.md',
   'docs/TASKS.md',
   'docs/ORCHESTRATION.md',

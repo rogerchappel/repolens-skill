@@ -7,7 +7,7 @@ Repolens Skill is a local-first agent skill package that scans a local project s
 ## Quickstart
 
 ```bash
-npm install
+npm ci
 npm test
 npm run smoke
 npm run release:check
@@ -54,8 +54,10 @@ npm run release:check
 
 `package:smoke` runs `npm pack --dry-run` and confirms the package includes the
 CLI, source modules, fixtures, release docs, skill file, README, and license.
-`release:check` combines static checks, tests, build, fixture smoke, and package
-smoke so maintainers can use the same gate locally and in CI.
+`release:check` verifies that `package-lock.json` matches `package.json`, then
+combines static checks, tests, build, fixture smoke, and package smoke so
+maintainers can use the same gate locally and in CI. Run `npm ci` from a fresh
+checkout to install exactly the dependency graph committed in the lockfile.
 
 ## Library
 
