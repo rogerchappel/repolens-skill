@@ -52,8 +52,10 @@ npm run package:smoke
 npm run release:check
 ```
 
-`package:smoke` runs `npm pack --dry-run` and confirms the package includes the
-CLI, source modules, fixtures, release docs, skill file, README, and license.
+`package:smoke` packs the publishable tarball, installs it into a disposable
+consumer project, confirms the expected files are present, and exercises the
+installed CLI's version, help, markdown, and JSON output. The temporary consumer
+and tarball are removed after the check.
 `release:check` verifies that `package-lock.json` matches `package.json`, then
 combines static checks, tests, build, fixture smoke, and package smoke so
 maintainers can use the same gate locally and in CI. Run `npm ci` from a fresh
