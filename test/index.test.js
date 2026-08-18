@@ -25,6 +25,29 @@ test('cli reports package version', () => {
   assert.equal(version, packageJson.version);
 });
 
+test('cli accepts options before the input file', () => {
+  const output = execFileSync(process.execPath, [
+    'bin/repolens-skill.js', '--format', 'json', 'fixtures/node-package.json',
+  ], { encoding: 'utf8' });
+  assert.equal(JSON.parse(output).name, 'sample-node');
+});
+
+test('cli rejects invalid argument combinations with concise errors', () => {
+  const cases = [
+    [['fixtures/node-package.json', '--formt', 'json'], 'Unknown option: --formt\n'],
+    [['fixtures/node-package.json', '--format'], 'Missing value for --format.\n'],
+    [['fixtures/node-package.json', 'fixtures/docs-only.json'],
+      'Unexpected positional argument: fixtures/docs-only.json\n'],
+  ];
+
+  for (const [args, message] of cases) {
+    const result = spawnSync(process.execPath, ['bin/repolens-skill.js', ...args], { encoding: 'utf8' });
+    assert.equal(result.status, 1);
+    assert.equal(result.stdout, '');
+    assert.equal(result.stderr, message);
+  }
+});
+
 test('lookalike paths do not satisfy repository readiness checks', () => {
   const brief = analyzeRepoSnapshot({
     files: ['docs/NOTREADME.md', 'contest/example.js', 'notes/.github/workflows-old.yml'],
