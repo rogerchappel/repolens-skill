@@ -6,6 +6,9 @@ Repolens Skill is a local-first agent skill package that scans a local project s
 
 ## Quickstart
 
+Development and release verification require Node.js 22 or newer and the npm
+version bundled with that supported Node release.
+
 ```bash
 npm ci
 npm test
@@ -63,6 +66,8 @@ and tarball are removed after the check.
 combines static checks, tests, build, fixture smoke, and package smoke so
 maintainers can use the same gate locally and in CI. Run `npm ci` from a fresh
 checkout to install exactly the dependency graph committed in the lockfile.
+CI runs this full gate, including the installed-tarball smoke, on the minimum
+supported Node.js 22 baseline.
 
 ## Library
 
