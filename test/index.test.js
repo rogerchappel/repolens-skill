@@ -72,6 +72,50 @@ test('valid nested README and test paths plus an anchored workflow are detected'
   assert.deepEqual(brief.riskSignals, []);
 });
 
+test('Windows and POSIX snapshot paths produce the same readiness and focus files', () => {
+  const posix = analyzeRepoSnapshot(load('path-style-posix.json'));
+  const windows = analyzeRepoSnapshot(load('path-style-windows.json'));
+
+  assert.equal(posix.releaseReadiness, 'ship');
+  assert.deepEqual(windows, posix);
+  assert.deepEqual(posix.focusFiles, [
+    'README.md',
+    'package.json',
+    'src/index.js',
+    'test/index.test.js',
+    'docs/USAGE.md',
+    '.github/workflows/ci.yml',
+  ]);
+});
+
+test('mixed-case snapshot paths use the same readiness and focus semantics', () => {
+  const brief = analyzeRepoSnapshot({
+    files: ['readme.MD', 'PACKAGE.JSON', 'SRC/index.js', 'TEST/index.test.js',
+      'DOCS/USAGE.md', '.GITHUB/WORKFLOWS/CI.YML'],
+    package: { scripts: { test: 'node --test' } },
+  });
+
+  assert.equal(brief.releaseReadiness, 'ship');
+  assert.deepEqual(brief.focusFiles, [
+    'readme.MD',
+    'PACKAGE.JSON',
+    'SRC/index.js',
+    'TEST/index.test.js',
+    'DOCS/USAGE.md',
+    '.GITHUB/WORKFLOWS/CI.YML',
+  ]);
+});
+
+test('focus selection rejects lookalike directories and filenames', () => {
+  const brief = analyzeRepoSnapshot({
+    files: ['README.md.bak', 'package.json.old', 'src-old/index.js', 'contest/example.js',
+      'mydocs/guide.md', '.github/workflows-old/ci.yml'],
+    package: { scripts: {} },
+  });
+
+  assert.deepEqual(brief.focusFiles, []);
+});
+
 test('test and spec filenames are detected without matching lookalike directories', () => {
   for (const file of ['src/index.test.js', 'src/index.spec.mjs']) {
     const brief = analyzeRepoSnapshot({

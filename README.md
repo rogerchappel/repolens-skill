@@ -51,6 +51,12 @@ may be an object or `null`; when present, `package.scripts` is optional but must
 be an object whose command values are strings. Invalid snapshots are rejected
 with a concise error and do not produce a review brief.
 
+Snapshot file paths may use POSIX (`src/index.js`) or Windows
+(`src\index.js`) separators. Repolens normalizes them to forward slashes in
+`focusFiles` and matches readiness and focus candidates case-insensitively.
+Directory and filename boundaries remain significant, so lookalikes such as
+`contest/`, `src-old/`, and `README.md.bak` are not selected.
+
 ## Release Verification
 
 ```bash

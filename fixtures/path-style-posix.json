@@ -1,0 +1,16 @@
+{
+  "name": "path-style-sample",
+  "files": [
+    "README.md",
+    "package.json",
+    "src/index.js",
+    "test/index.test.js",
+    "docs/USAGE.md",
+    ".github/workflows/ci.yml"
+  ],
+  "package": {
+    "scripts": {
+      "test": "node --test"
+    }
+  }
+}
