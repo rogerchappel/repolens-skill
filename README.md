@@ -28,6 +28,8 @@ node bin/repolens-skill.js --format json fixtures/node-package.json
 The CLI reads repository snapshot JSON and prints a repository review brief. It never calls external services, writes to third-party systems, or reads credentials.
 The `--format` option may appear before or after the input file. Unknown options,
 missing option values, and extra positional arguments are rejected.
+Use `--help` or `--version` as a standalone option; combining either with an
+input or another option is rejected.
 
 ### Snapshot JSON shape
 
