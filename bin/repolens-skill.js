@@ -14,6 +14,8 @@ function fail(message) {
 function parseArgs(values) {
   let file;
   let format = 'markdown';
+  let action;
+  let formatSpecified = false;
 
   for (let index = 0; index < values.length; index += 1) {
     const value = values[index];
@@ -21,7 +23,11 @@ function parseArgs(values) {
       const next = values[index + 1];
       if (!next || next.startsWith('--')) fail('Missing value for --format.');
       format = next;
+      formatSpecified = true;
       index += 1;
+    } else if (value === '--help' || value === '--version') {
+      if (action) fail('The ' + value + ' option must be used by itself.');
+      action = value;
     } else if (value.startsWith('--')) {
       fail('Unknown option: ' + value);
     } else if (file) {
@@ -31,20 +37,23 @@ function parseArgs(values) {
     }
   }
 
-  return { file, format };
+  if (action && (file || formatSpecified)) {
+    fail('The ' + action + ' option must be used by itself.');
+  }
+  return { action, file, format };
 }
 
-if (args.includes('--version')) {
+const { action, file, format } = parseArgs(args);
+if (action === '--version') {
   console.log(packageJson.version);
   process.exit(0);
 }
 
-if (args.includes('--help')) {
+if (action === '--help') {
   console.log('Usage: repolens-skill <input.json> [--format markdown|json]');
   process.exit(0);
 }
 
-const { file, format } = parseArgs(args);
 if (!file) fail('Missing input file. Usage: repolens-skill <input.json> [--format markdown|json]');
 if (!['markdown', 'json'].includes(format)) {
   fail('Unsupported format: ' + format);
