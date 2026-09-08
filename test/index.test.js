@@ -38,6 +38,9 @@ test('cli rejects invalid argument combinations with concise errors', () => {
     [['fixtures/node-package.json', '--format'], 'Missing value for --format.\n'],
     [['fixtures/node-package.json', 'fixtures/docs-only.json'],
       'Unexpected positional argument: fixtures/docs-only.json\n'],
+    [['--version', 'unexpected.json'],
+      'The --version option must be used by itself.\n'],
+    [['--help', '--bogus'], 'Unknown option: --bogus\n'],
   ];
 
   for (const [args, message] of cases) {
