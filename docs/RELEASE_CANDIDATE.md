@@ -15,10 +15,8 @@ ship
 
 Pending PR body should record:
 
-- `npm test`
-- `npm run check`
-- `npm run build`
-- `npm run smoke`
+- `npm ci` (from a fresh checkout)
+- `npm run release:check` (the complete CI gate: lockfile, check, tests, build, fixture smoke, and packaged-consumer smoke)
 
 ## Known Limitations
 
@@ -28,10 +26,8 @@ Pending PR body should record:
 
 ## Verification Results
 
-- `npm test` PASS, 1 fixture-backed test.
-- `npm run check` PASS, required docs and SKILL.md sections present.
-- `npm run build` PASS, dist smoke completed.
-- `npm run smoke` PASS, rendered node-package repository review brief.
+- `npm ci` PASS, dependencies installed from the committed lockfile.
+- `npm run release:check` PASS, including lockfile validation, documentation checks, tests, build, fixture smoke, and installed-package consumer smoke.
 
 ## Commit Groups
 
