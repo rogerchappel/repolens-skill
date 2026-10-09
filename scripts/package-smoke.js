@@ -40,6 +40,12 @@ try {
     throw new Error(`packed artifact is missing entries:\n${missing.join('\n')}`);
   }
 
+  const excluded = ['scripts/build.js', 'scripts/check.js'];
+  const includedExcluded = excluded.filter((entry) => packedPaths.has(entry));
+  if (includedExcluded.length > 0) {
+    throw new Error(`packed artifact unexpectedly includes source scripts:\n${includedExcluded.join('\n')}`);
+  }
+
   const consumer = join(temporaryRoot, 'consumer');
   mkdirSync(consumer);
   writeFileSync(join(consumer, 'package.json'), JSON.stringify({ private: true }));

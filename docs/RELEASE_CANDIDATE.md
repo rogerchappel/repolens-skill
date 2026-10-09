@@ -17,6 +17,7 @@ Pending PR body should record:
 
 - `npm ci` (from a fresh checkout)
 - `npm run release:check` (the complete CI gate: lockfile, check, tests, build, fixture smoke, and packaged-consumer smoke)
+- `npm run package:smoke` packs and installs the tarball in a temporary consumer, then verifies version, help, and fixture rendering through the installed CLI. It also confirms build/check source scripts excluded by `package.json` are absent from the archive.
 
 ## Known Limitations
 
