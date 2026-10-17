@@ -28,6 +28,7 @@ try {
     'src/render.js',
     'fixtures/node-package.json',
     'docs/RELEASE_CANDIDATE.md',
+    'scripts/package-smoke.js',
     'SKILL.md',
     'README.md',
     'LICENSE',
