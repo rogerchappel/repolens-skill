@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -38,6 +38,28 @@ test('lockfile check rejects a missing lockfile', (t) => {
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /package-lock\.json is required/);
+});
+
+test('lockfile check preserves lockfile when npm fails after modifying it', (t) => {
+  const directory = fixture();
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const lockPath = join(directory, 'package-lock.json');
+  const original = readFileSync(lockPath, 'utf8');
+  const fakeBin = join(directory, 'bin');
+  const fakeNpm = join(fakeBin, 'npm');
+  mkdirSync(fakeBin);
+  writeFileSync(fakeNpm, `#!/bin/sh\nprintf altered > package-lock.json\necho npm failed >&2\nexit 7\n`);
+  chmodSync(fakeNpm, 0o755);
+
+  const result = spawnSync(process.execPath, [script.pathname], {
+    cwd: directory,
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` },
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /npm failed/);
+  assert.equal(readFileSync(lockPath, 'utf8'), original);
 });
 
 test('lockfile check rejects drift and leaves the lockfile unchanged', (t) => {

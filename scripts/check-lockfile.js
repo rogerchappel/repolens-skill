@@ -8,21 +8,30 @@ if (!existsSync(lockfile)) {
 }
 
 const original = readFileSync(lockfile);
-const result = spawnSync(
-  'npm',
-  ['install', '--package-lock-only', '--ignore-scripts', '--no-audit', '--no-fund'],
-  { encoding: 'utf8' },
-);
+let failure;
+try {
+  const result = spawnSync(
+    'npm',
+    ['install', '--package-lock-only', '--ignore-scripts', '--no-audit', '--no-fund'],
+    { encoding: 'utf8' },
+  );
 
-if (result.status !== 0) {
-  process.stderr.write(result.stderr || result.stdout || 'npm could not validate package-lock.json\n');
-  process.exit(result.status || 1);
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    failure = result.stderr || result.stdout || 'npm could not validate package-lock.json\n';
+  } else if (!readFileSync(lockfile).equals(original)) {
+    failure = 'package-lock.json is out of sync with package.json; run npm install --package-lock-only\n';
+  }
+} catch (error) {
+  failure = `${error.message}\n`;
+} finally {
+  // npm may modify the tracked file even when it exits unsuccessfully or
+  // validation itself throws. Restore the original bytes on every path.
+  writeFileSync(lockfile, original);
 }
 
-const generated = readFileSync(lockfile);
-if (!generated.equals(original)) {
-  writeFileSync(lockfile, original);
-  console.error('package-lock.json is out of sync with package.json; run npm install --package-lock-only');
+if (failure) {
+  process.stderr.write(failure);
   process.exit(1);
 }
 
