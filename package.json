@@ -38,6 +38,9 @@
   "files": [
     "src",
     "bin",
+    "scripts/check.js",
+    "scripts/check-lockfile.js",
+    "scripts/package-smoke.js",
     "fixtures",
     "docs",
     "SKILL.md",
