@@ -41,7 +41,12 @@ try {
     throw new Error(`packed artifact is missing entries:\n${missing.join('\n')}`);
   }
 
-  const excluded = ['scripts/build.js', 'scripts/check.js'];
+  const excluded = ['scripts/build.js'];
+  const requiredScripts = ['scripts/check.js', 'scripts/check-lockfile.js', 'scripts/package-smoke.js'];
+  const missingScripts = requiredScripts.filter((entry) => !packedPaths.has(entry));
+  if (missingScripts.length > 0) {
+    throw new Error(`packed artifact is missing package-check scripts:\n${missingScripts.join('\n')}`);
+  }
   const includedExcluded = excluded.filter((entry) => packedPaths.has(entry));
   if (includedExcluded.length > 0) {
     throw new Error(`packed artifact unexpectedly includes source scripts:\n${includedExcluded.join('\n')}`);
