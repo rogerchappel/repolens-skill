@@ -12,7 +12,7 @@ let failure;
 try {
   const result = spawnSync(
     'npm',
-    ['install', '--package-lock-only', '--ignore-scripts', '--no-audit', '--no-fund'],
+    ['install', '--package-lock-only', '--ignore-scripts', '--no-audit', '--no-fund', '--offline'],
     { encoding: 'utf8' },
   );
 

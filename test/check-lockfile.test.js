@@ -81,3 +81,25 @@ test('lockfile check rejects drift and leaves the lockfile unchanged', (t) => {
   assert.match(result.stderr, /package-lock\.json is out of sync/);
   assert.equal(readFileSync(lockPath, 'utf8'), original);
 });
+
+test('lockfile check invokes npm in offline mode', (t) => {
+  const directory = fixture();
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const fakeBin = join(directory, 'bin');
+  const argsPath = join(directory, 'npm-args');
+  const fakeNpm = join(fakeBin, 'npm');
+  mkdirSync(fakeBin);
+  writeFileSync(fakeNpm, `#!/bin/sh\nprintf '%s\\n' "$@" > npm-args\nexit 0\n`);
+  chmodSync(fakeNpm, 0o755);
+
+  const result = spawnSync(process.execPath, [script.pathname], {
+    cwd: directory,
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${fakeBin}:${process.env.PATH}` },
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(readFileSync(argsPath, 'utf8').trim().split('\n'), [
+    'install', '--package-lock-only', '--ignore-scripts', '--no-audit', '--no-fund', '--offline',
+  ]);
+});
